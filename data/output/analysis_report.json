@@ -1,0 +1,209 @@
+{
+  "generated_at": "2026-04-16T19:59:09.360315+00:00",
+  "total_emails": 3,
+  "results": [
+    {
+      "file_name": "legit_newsletter.eml",
+      "sender": "noreply@github.com",
+      "subject": "Your weekly GitHub digest",
+      "total_score": 0,
+      "classification": "LEGITIMO",
+      "links": [
+        "https://github.com/notifications"
+      ],
+      "authentication": {
+        "spf": "pass",
+        "dkim": "pass",
+        "dmarc": "pass"
+      },
+      "triggered_rules": []
+    },
+    {
+      "file_name": "phishing_bank_alert.eml",
+      "sender": "alerta@banco-seguranca-verificacao.com",
+      "subject": "URGENTE: sua conta foi bloqueada",
+      "total_score": 115,
+      "classification": "ALTO_RISCO",
+      "links": [
+        "http://banco-verificacao-login.com.br/recovery"
+      ],
+      "authentication": {
+        "spf": "fail",
+        "dkim": "fail",
+        "dmarc": "fail"
+      },
+      "triggered_rules": [
+        {
+          "rule_name": "authentication_failures",
+          "severity": "high",
+          "score": 40,
+          "description": "SPF, DKIM, or DMARC results indicate failure or suspicious authentication state.",
+          "evidence": {
+            "from_address": "alerta@banco-seguranca-verificacao.com",
+            "authentication_results": "mx.example.com; spf=fail smtp.mailfrom=banco-seguranca-verificacao.com; dkim=fail header.d=banco-seguranca-verificacao.com; dmarc=fail header.from=banco.com",
+            "failing_mechanisms": [
+              "spf=fail",
+              "dkim=fail",
+              "dmarc=fail"
+            ],
+            "suspicious_mechanisms": []
+          }
+        },
+        {
+          "rule_name": "urgency_language",
+          "severity": "medium",
+          "score": 12,
+          "description": "The message uses urgency language commonly seen in phishing attempts.",
+          "evidence": {
+            "from_address": "alerta@banco-seguranca-verificacao.com",
+            "subject": "URGENTE: sua conta foi bloqueada",
+            "matched_terms": [
+              "30 minutos",
+              "agora",
+              "imediatamente",
+              "urgent",
+              "urgente"
+            ]
+          }
+        },
+        {
+          "rule_name": "sensitive_information_request",
+          "severity": "high",
+          "score": 20,
+          "description": "The message appears to request passwords, codes, or account credentials.",
+          "evidence": {
+            "from_address": "alerta@banco-seguranca-verificacao.com",
+            "subject": "URGENTE: sua conta foi bloqueada",
+            "matched_terms": [
+              "codigo de seguranca",
+              "senha"
+            ]
+          }
+        },
+        {
+          "rule_name": "suspicious_links",
+          "severity": "high",
+          "score": 10,
+          "description": "The message contains suspicious links or links that do not use HTTPS.",
+          "evidence": {
+            "from_address": "alerta@banco-seguranca-verificacao.com",
+            "flagged_links": [
+              {
+                "url": "http://banco-verificacao-login.com.br/recovery",
+                "reasons": "non_https, suspicious_domain_pattern"
+              }
+            ]
+          }
+        },
+        {
+          "rule_name": "suspicious_sender_patterns",
+          "severity": "medium",
+          "score": 15,
+          "description": "The sender address uses patterns often associated with spoofing or phishing domains.",
+          "evidence": {
+            "from_address": "alerta@banco-seguranca-verificacao.com",
+            "sender_domain": "banco-seguranca-verificacao.com",
+            "reasons": [
+              "sender_domain_pattern",
+              "sender_local_part_keyword",
+              "excessive_hyphenation"
+            ]
+          }
+        },
+        {
+          "rule_name": "account_blocking_or_forced_verification",
+          "severity": "high",
+          "score": 18,
+          "description": "The message pressures the recipient with account blocking or forced verification language.",
+          "evidence": {
+            "from_address": "alerta@banco-seguranca-verificacao.com",
+            "subject": "URGENTE: sua conta foi bloqueada",
+            "matched_terms": [
+              "bloqueada",
+              "confirme seus dados",
+              "desbloquear",
+              "encerrada"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "file_name": "suspicious_account_check.eml",
+      "sender": "security-check@account-verify-mail.com",
+      "subject": "Please confirm your account activity",
+      "total_score": 73,
+      "classification": "PHISHING_PROVAVEL",
+      "links": [
+        "http://account-verify-mail.com/session/check"
+      ],
+      "authentication": {
+        "spf": "softfail",
+        "dkim": "fail",
+        "dmarc": "none"
+      },
+      "triggered_rules": [
+        {
+          "rule_name": "authentication_failures",
+          "severity": "high",
+          "score": 30,
+          "description": "SPF, DKIM, or DMARC results indicate failure or suspicious authentication state.",
+          "evidence": {
+            "from_address": "security-check@account-verify-mail.com",
+            "authentication_results": "mx.example.com; spf=softfail smtp.mailfrom=account-verify-mail.com; dkim=fail header.d=account-verify-mail.com; dmarc=none",
+            "failing_mechanisms": [
+              "spf=softfail",
+              "dkim=fail",
+              "dmarc=none"
+            ],
+            "suspicious_mechanisms": []
+          }
+        },
+        {
+          "rule_name": "suspicious_links",
+          "severity": "high",
+          "score": 10,
+          "description": "The message contains suspicious links or links that do not use HTTPS.",
+          "evidence": {
+            "from_address": "security-check@account-verify-mail.com",
+            "flagged_links": [
+              {
+                "url": "http://account-verify-mail.com/session/check",
+                "reasons": "non_https, suspicious_domain_pattern"
+              }
+            ]
+          }
+        },
+        {
+          "rule_name": "suspicious_sender_patterns",
+          "severity": "medium",
+          "score": 15,
+          "description": "The sender address uses patterns often associated with spoofing or phishing domains.",
+          "evidence": {
+            "from_address": "security-check@account-verify-mail.com",
+            "sender_domain": "account-verify-mail.com",
+            "reasons": [
+              "sender_domain_pattern",
+              "sender_local_part_keyword",
+              "excessive_hyphenation"
+            ]
+          }
+        },
+        {
+          "rule_name": "account_blocking_or_forced_verification",
+          "severity": "high",
+          "score": 18,
+          "description": "The message pressures the recipient with account blocking or forced verification language.",
+          "evidence": {
+            "from_address": "security-check@account-verify-mail.com",
+            "subject": "Please confirm your account activity",
+            "matched_terms": [
+              "confirm your account",
+              "temporary restrictions"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
