@@ -47,9 +47,9 @@ Ele aplica:
 
 ## Como Funciona
 
-
+```text
 .eml → Ingestão → Parser → Heurísticas → Score → Classificação → JSON Report
-
+```
 
 Pipeline determinística com análise baseada em evidências.
 
@@ -110,38 +110,35 @@ O sistema foi testado com um conjunto de 8 e-mails simulando cenários reais:
 Execução real do sistema:
 
 ```text
-ALTO_RISCO=2
-PHISHING_PROVAVEL=3
-SUSPEITO=1
-LEGITIMO=2
-Exemplos
-Phishing bancário
-Score: 115
-Classification: ALTO_RISCO
-Scam financeiro
-Score: 65
-Classification: PHISHING_PROVAVEL
-BEC (fraude corporativa)
-Score: 42
-Classification: SUSPEITO
-Legítimo
-Score: 0
-Classification: LEGITIMO
-Heurísticas Implementadas (v2)
-Autenticação
-SPF / DKIM / DMARC failures
-Engenharia Social
-Urgency language
-Account blocking / forced verification
-Fraude Financeira
-financial_request_language (BEC detection)
-unrealistic_promise (scam detection)
-Links
-HTTP links
-mismatched_link_text (link mascarado)
-Identidade
-suspicious sender patterns
-Arquitetura
+Summary: ALTO_RISCO=2, LEGITIMO=2, PHISHING_PROVAVEL=3, SUSPEITO=1
+Total loaded: 8
+Total failed: 0
+```
+
+### Exemplos
+
+| Cenário | Score | Classification |
+|---|---:|---|
+| Phishing bancário | 115 | `ALTO_RISCO` |
+| Scam financeiro | 65 | `PHISHING_PROVAVEL` |
+| BEC (fraude corporativa) | 42 | `SUSPEITO` |
+| Legítimo | 0 | `LEGITIMO` |
+
+### Heurísticas Implementadas (v2)
+
+| Categoria | Regras |
+|---|---|
+| Autenticação | `authentication_failures` |
+| Engenharia Social | `urgency_language`, `account_blocking_or_forced_verification`, `sensitive_information_request` |
+| Fraude Financeira | `financial_request_language`, `unrealistic_promise` |
+| Links | `suspicious_links`, `mismatched_link_text` |
+| Identidade | `suspicious_sender_patterns` |
+
+---
+
+## Arquitetura
+
+```text
 ┌──────────────────────────────────────────────┐
 │  CLI Layer        argparse                   │
 ├──────────────────────────────────────────────┤
@@ -153,64 +150,105 @@ Arquitetura
 ├──────────────────────────────────────────────┤
 │  Reporting        JSON output                │
 └──────────────────────────────────────────────┘
-Decisões Técnicas
+```
 
-Heurísticas primeiro
-Sistema determinístico e explicável — sem dependência de IA.
+### Decisões Técnicas
 
-Arquitetura modular
-Cada camada isolada por responsabilidade.
+**Heurísticas primeiro**  
+Sistema determinístico e explicável, sem dependência de IA para a decisão principal.
 
-Explicabilidade
-Cada decisão é baseada em regras acionadas e evidências.
+**Arquitetura modular**  
+Cada camada isola uma responsabilidade: ingestão, parsing, análise, classificação e reporting.
 
-Estrutura do Projeto
+**Explicabilidade**  
+Cada classificação é acompanhada por regras acionadas, severidade e pontuação acumulada.
+
+---
+
+## Estrutura do Projeto
+
+```text
 email_fraud_shield/
 ├── app/
-│   ├── ingestor/
-│   ├── parser/
-│   ├── analyzer/
-│   ├── reporting/
 │   ├── alerts/
+│   ├── analyzer/
+│   │   ├── classifier.py
+│   │   ├── heuristics.py
+│   │   └── scorer.py
+│   ├── ingestor/
+│   │   └── email_ingestor.py
 │   ├── llm/
-│   └── models/
+│   ├── models/
+│   │   └── email_models.py
+│   ├── parser/
+│   │   └── email_parser.py
+│   └── reporting/
+│       └── report_generator.py
 ├── data/
 │   ├── samples/
 │   └── output/
 ├── main.py
 ├── config.py
 └── requirements.txt
-Como Executar
-git clone https://github.com/seu-usuario/email-fraud-shield.git
-cd email-fraud-shield
+```
+
+---
+
+## Como Executar
+
+**Pré-requisitos:** Python `3.10+`
+
+```bash
+git clone https://github.com/jeffersonferreira-ti/email_fraud_shield.git
+cd email_fraud_shield
 pip install -r requirements.txt
 
-python main.py --source ./data/samples --output ./data/output/report.json
-Limitações
-Não analisa anexos binários
-Não integra com inbox real (IMAP/API)
-Não substitui soluções corporativas
-Baseado em heurísticas (MVP)
-Roadmap
-Versão	Foco	Status
-v1.0	MVP heurístico + CLI	✅ Concluído
-v1.1	Dataset expandido + heurísticas v2	✅ Concluído
-v1.2	Refinamento (delivery scams, brand impersonation)	🔄 Planejado
-v2.0	Integração com LLM (análise complementar)	📋 Planejado
-v2.1	Integração com inbox real	💡 Futuro
-Sobre o Projeto
+python main.py --source ./data/samples --output ./data/output/report.json --summary
+```
+
+---
+
+## Limitações
+
+- Não analisa anexos binários
+- Não integra com inbox real (IMAP/API)
+- Não substitui soluções corporativas
+- Baseado em heurísticas determinísticas (MVP)
+
+---
+
+## Roadmap
+
+| Versão | Foco | Status |
+|---|---|---|
+| v1.0 | MVP heurístico + CLI | ✅ Concluído |
+| v1.1 | Dataset expandido + heurísticas v2 | ✅ Concluído |
+| v1.2 | Refinamento (delivery scams, brand impersonation) | 🔄 Planejado |
+| v2.0 | Integração com LLM (análise complementar) | 📋 Planejado |
+| v2.1 | Integração com inbox real | 💡 Futuro |
+
+---
+
+## Sobre o Projeto
 
 Projeto desenvolvido como estudo prático de:
 
-Segurança da Informação
-Detecção de fraudes
-Engenharia de software
-Arquitetura modular
-Sobre o Desenvolvedor
+- Segurança da Informação
+- Detecção de fraudes
+- Engenharia de software
+- Arquitetura modular
 
-Desenvolvido por Jefferson Ferreira
+---
 
+## Sobre o Desenvolvedor
 
+Desenvolvido por **Jefferson Ferreira**.
 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://www.linkedin.com/in/jefferson-ferreira-ti/)
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github)](https://github.com/jeffersonferreira-ti)
 
-<div align="center"> <sub>Email Fraud Shield · 2026</sub> </div> ```
+---
+
+<div align="center">
+<sub>Email Fraud Shield · 2026</sub>
+</div>
