@@ -1,0 +1,52 @@
+From: "Banco Suporte" <alerta@banco-seguranca-verificacao.com>
+To: user@example.com
+Subject: URGENTE: sua conta foi bloqueada
+Date: Thu, 16 Apr 2026 10:30:00 -0300
+Message-ID: <phishing-001@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="boundary3"
+Received-SPF: fail
+Authentication-Results: mx.example.com; spf=fail smtp.mailfrom=banco-seguranca-verificacao.com; dkim=fail header.d=banco-seguranca-verificacao.com; dmarc=fail header.from=banco.com
+
+--boundary3
+Content-Type: text/plain; charset="utf-8"
+
+Prezado cliente,
+
+Sua conta foi bloqueada por motivo de seguranca. Para evitar o cancelamento definitivo, confirme seus dados imediatamente.
+
+Acesse agora:
+http://banco-verificacao-login.com.br/recovery
+
+Informe:
+- agencia
+- conta
+- senha
+- codigo de seguranca
+
+Caso nao realize a confirmacao em ate 30 minutos, sua conta sera encerrada.
+
+Atenciosamente,
+Central de Seguranca
+
+--boundary3
+Content-Type: text/html; charset="utf-8"
+
+<html>
+  <body>
+    <p>Prezado cliente,</p>
+    <p><strong>Sua conta foi bloqueada</strong> por motivo de seguranca. Para evitar o cancelamento definitivo, confirme seus dados imediatamente.</p>
+    <p><a href="http://banco-verificacao-login.com.br/recovery">Clique aqui para desbloquear sua conta</a></p>
+    <p>Informe:</p>
+    <ul>
+      <li>agencia</li>
+      <li>conta</li>
+      <li>senha</li>
+      <li>codigo de seguranca</li>
+    </ul>
+    <p>Caso nao realize a confirmacao em ate 30 minutos, sua conta sera encerrada.</p>
+    <p>Atenciosamente,<br>Central de Seguranca</p>
+  </body>
+</html>
+
+--boundary3--

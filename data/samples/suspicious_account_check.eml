@@ -1,0 +1,36 @@
+From: "Security Team" <security-check@account-verify-mail.com>
+To: user@example.com
+Subject: Please confirm your account activity
+Date: Thu, 16 Apr 2026 10:05:00 -0300
+Message-ID: <suspicious-001@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="boundary2"
+Received-SPF: softfail
+Authentication-Results: mx.example.com; spf=softfail smtp.mailfrom=account-verify-mail.com; dkim=fail header.d=account-verify-mail.com; dmarc=none
+
+--boundary2
+Content-Type: text/plain; charset="utf-8"
+
+Hello user,
+
+We noticed unusual activity on your account. Please confirm your recent login attempt to avoid temporary restrictions.
+
+Review your account here:
+http://account-verify-mail.com/session/check
+
+Thank you,
+Security Team
+
+--boundary2
+Content-Type: text/html; charset="utf-8"
+
+<html>
+  <body>
+    <p>Hello user,</p>
+    <p>We noticed unusual activity on your account. Please confirm your recent login attempt to avoid temporary restrictions.</p>
+    <p><a href="http://account-verify-mail.com/session/check">Review account activity</a></p>
+    <p>Thank you,<br>Security Team</p>
+  </body>
+</html>
+
+--boundary2--

@@ -1,0 +1,37 @@
+From: "GitHub" <noreply@github.com>
+To: user@example.com
+Subject: Your weekly GitHub digest
+Date: Thu, 16 Apr 2026 09:15:00 -0300
+Message-ID: <legit-newsletter-001@example.com>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="boundary1"
+Received-SPF: pass
+Authentication-Results: mx.example.com; spf=pass smtp.mailfrom=github.com; dkim=pass header.d=github.com; dmarc=pass header.from=github.com
+
+--boundary1
+Content-Type: text/plain; charset="utf-8"
+
+Hello,
+
+Here is your weekly GitHub digest with updates from repositories you follow.
+
+You can review your notifications here:
+https://github.com/notifications
+
+Best regards,
+GitHub Team
+
+--boundary1
+Content-Type: text/html; charset="utf-8"
+
+<html>
+  <body>
+    <p>Hello,</p>
+    <p>Here is your weekly GitHub digest with updates from repositories you follow.</p>
+    <p>You can review your notifications here:</p>
+    <a href="https://github.com/notifications">Open GitHub Notifications</a>
+    <p>Best regards,<br>GitHub Team</p>
+  </body>
+</html>
+
+--boundary1--
