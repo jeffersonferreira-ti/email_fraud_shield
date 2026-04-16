@@ -6,7 +6,7 @@ import re
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
-from app.models.email_models import HeuristicFinding, ParsedEmail
+from app.models.email_models import AnchorLink, HeuristicFinding, ParsedEmail
 
 
 @dataclass(slots=True)
@@ -67,6 +67,34 @@ class HeuristicAnalyzer:
         "confirme seus dados",
         "desbloquear",
     )
+    _FINANCIAL_REQUEST_TERMS = (
+        "wire transfer",
+        "urgent payment",
+        "bank details",
+        "transfer today",
+        "confidential payment",
+        "do not discuss with anyone",
+        "confirm once done",
+        "process payment",
+        "send r$",
+        "send $",
+        "following account",
+        "once completed",
+    )
+    _UNREALISTIC_PROMISE_TERMS = (
+        "guaranteed profit",
+        "500% profit",
+        "500% returns",
+        "500% return",
+        "earn fast",
+        "risk-free profit",
+        "limited time investment",
+        "massive returns in hours",
+        "guaranteed 500%",
+        "returns in 24 hours",
+        "profit in 24 hours",
+        "invest now",
+    )
     _SUSPICIOUS_SENDER_TOKENS = (
         "verify",
         "verification",
@@ -98,6 +126,9 @@ class HeuristicAnalyzer:
             self._check_suspicious_links,
             self._check_suspicious_sender_patterns,
             self._check_account_pressure_language,
+            self._check_financial_request_language,
+            self._check_unrealistic_promise,
+            self._check_mismatched_link_text,
         ):
             finding = rule(email, context)
             if finding is not None:
@@ -296,9 +327,118 @@ class HeuristicAnalyzer:
             },
         )
 
+    def _check_financial_request_language(
+        self, email: ParsedEmail, context: RuleContext
+    ) -> HeuristicFinding | None:
+        matches = self._collect_matches(context.combined_text, self._FINANCIAL_REQUEST_TERMS)
+        if len(matches) < 2:
+            return None
+
+        score = min(30, 20 + (len(matches) - 2) * 3)
+        return HeuristicFinding(
+            rule_name="financial_request_language",
+            description="The message contains business email compromise or urgent payment request language.",
+            severity="high",
+            score=score,
+            evidence={
+                "from_address": email.from_address,
+                "subject": email.subject,
+                "matched_terms": matches,
+            },
+        )
+
+    def _check_unrealistic_promise(
+        self, email: ParsedEmail, context: RuleContext
+    ) -> HeuristicFinding | None:
+        matches = self._collect_matches(context.combined_text, self._UNREALISTIC_PROMISE_TERMS)
+        if len(matches) < 2:
+            return None
+
+        score = min(25, 18 + (len(matches) - 2) * 2)
+        return HeuristicFinding(
+            rule_name="unrealistic_promise",
+            description="The message promises exaggerated or guaranteed financial returns that are typical of scams.",
+            severity="high",
+            score=score,
+            evidence={
+                "from_address": email.from_address,
+                "subject": email.subject,
+                "matched_terms": matches,
+            },
+        )
+
+    def _check_mismatched_link_text(
+        self, email: ParsedEmail, context: RuleContext
+    ) -> HeuristicFinding | None:
+        del context
+        mismatches: list[dict[str, str]] = []
+
+        for anchor in email.anchor_links:
+            visible_target = self._extract_visible_link_target(anchor.text)
+            actual_target = self._extract_domain(anchor.href)
+
+            if not visible_target or not actual_target:
+                continue
+            if visible_target == actual_target:
+                continue
+
+            mismatches.append(
+                {
+                    "visible_text": anchor.text,
+                    "visible_domain": visible_target,
+                    "actual_href": anchor.href,
+                    "actual_domain": actual_target,
+                }
+            )
+
+        if not mismatches:
+            return None
+
+        return HeuristicFinding(
+            rule_name="mismatched_link_text",
+            description="The visible text of an HTML link does not match its real destination domain.",
+            severity="high",
+            score=min(30, 22 + (len(mismatches) - 1) * 4),
+            evidence={
+                "from_address": email.from_address,
+                "mismatched_links": mismatches,
+            },
+        )
+
     def _collect_matches(self, text: str, terms: tuple[str, ...]) -> list[str]:
         matches = [term for term in terms if term in text]
         return sorted(set(matches))
+
+    def _extract_visible_link_target(self, text: str) -> str | None:
+        cleaned_text = text.strip().lower()
+        if not cleaned_text:
+            return None
+
+        if "://" in cleaned_text:
+            parsed = urlparse(cleaned_text)
+            return self._extract_domain(parsed.netloc)
+
+        if re.fullmatch(r"(?:[a-z0-9-]+\.)+[a-z]{2,}(?:/[\w\-./?%&=]*)?", cleaned_text):
+            host = cleaned_text.split("/", 1)[0]
+            return self._extract_domain(host)
+
+        return None
+
+    def _extract_domain(self, value: str) -> str | None:
+        normalized = value.strip().lower()
+        if not normalized:
+            return None
+
+        parsed = urlparse(normalized if "://" in normalized else f"https://{normalized}")
+        host = parsed.netloc or parsed.path
+        host = host.split("@")[-1].split(":")[0].strip(".")
+        if not host:
+            return None
+
+        labels = [label for label in host.split(".") if label]
+        if len(labels) >= 2:
+            return ".".join(labels[-2:])
+        return host
 
     def _looks_suspicious_host(self, host: str) -> bool:
         normalized_host = host.lower().strip(".")

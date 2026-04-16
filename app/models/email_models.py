@@ -5,6 +5,14 @@ from typing import Any
 
 
 @dataclass(slots=True)
+class AnchorLink:
+    """HTML anchor information extracted from an email body."""
+
+    href: str
+    text: str = ""
+
+
+@dataclass(slots=True)
 class ParsedEmail:
     """Normalized representation of a parsed email."""
 
@@ -16,6 +24,7 @@ class ParsedEmail:
     plain_text_body: str = ""
     html_body: str = ""
     links: list[str] = field(default_factory=list)
+    anchor_links: list[AnchorLink] = field(default_factory=list)
     spf_result: str | None = None
     dkim_result: str | None = None
     dmarc_result: str | None = None

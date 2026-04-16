@@ -2,12 +2,13 @@
 
 import logging
 import re
+from dataclasses import dataclass
 from email.message import EmailMessage
 from email.utils import getaddresses
 from html.parser import HTMLParser
 
 from app.ingestor.email_ingestor import IngestedEmail
-from app.models.email_models import ParsedEmail
+from app.models.email_models import AnchorLink, ParsedEmail
 
 
 logger = logging.getLogger(__name__)
@@ -16,12 +17,22 @@ TEXT_LINK_PATTERN = re.compile(r"https?://[^\s<>\"]+")
 AUTH_RESULT_PATTERN = re.compile(r"\b(spf|dkim|dmarc)\s*=\s*([A-Za-z0-9_-]+)", re.IGNORECASE)
 
 
+@dataclass(slots=True)
+class _AnchorCandidate:
+    """Temporary container used while parsing HTML anchors."""
+
+    href: str
+    text_parts: list[str]
+
+
 class LinkExtractor(HTMLParser):
     """Extract links from HTML anchor tags."""
 
     def __init__(self) -> None:
         super().__init__()
         self.links: list[str] = []
+        self.anchor_links: list[AnchorLink] = []
+        self._current_anchor: _AnchorCandidate | None = None
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag.lower() != "a":
@@ -29,7 +40,22 @@ class LinkExtractor(HTMLParser):
 
         for attr_name, attr_value in attrs:
             if attr_name.lower() == "href" and attr_value:
-                self.links.append(attr_value.strip())
+                href = attr_value.strip()
+                self.links.append(href)
+                self._current_anchor = _AnchorCandidate(href=href, text_parts=[])
+                break
+
+    def handle_data(self, data: str) -> None:
+        if self._current_anchor is not None:
+            self._current_anchor.text_parts.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() != "a" or self._current_anchor is None:
+            return
+
+        text = " ".join(part.strip() for part in self._current_anchor.text_parts if part.strip())
+        self.anchor_links.append(AnchorLink(href=self._current_anchor.href, text=text))
+        self._current_anchor = None
 
 
 class EmailParser:
@@ -48,7 +74,7 @@ class EmailParser:
         """Parse a single ingested email."""
         message = email_item.message
         plain_text_body, html_body = self._extract_bodies(message)
-        links = self._extract_links(plain_text_body, html_body)
+        links, anchor_links = self._extract_links(plain_text_body, html_body)
         authentication_results = self._get_header_value(message, "Authentication-Results")
 
         spf_result = self._extract_auth_result(authentication_results, "spf")
@@ -64,6 +90,7 @@ class EmailParser:
             plain_text_body=plain_text_body,
             html_body=html_body,
             links=links,
+            anchor_links=anchor_links,
             spf_result=spf_result,
             dkim_result=dkim_result,
             dmarc_result=dmarc_result,
@@ -106,8 +133,9 @@ class EmailParser:
 
         return "\n".join(plain_text_parts).strip(), "\n".join(html_parts).strip()
 
-    def _extract_links(self, plain_text_body: str, html_body: str) -> list[str]:
+    def _extract_links(self, plain_text_body: str, html_body: str) -> tuple[list[str], list[AnchorLink]]:
         links: list[str] = []
+        anchor_links: list[AnchorLink] = []
 
         for link in TEXT_LINK_PATTERN.findall(plain_text_body):
             if link not in links:
@@ -125,11 +153,13 @@ class EmailParser:
                 if link not in links:
                     links.append(link)
 
+            anchor_links.extend(extractor.anchor_links)
+
             for link in TEXT_LINK_PATTERN.findall(html_body):
                 if link not in links:
                     links.append(link)
 
-        return links
+        return links, anchor_links
 
     def _extract_primary_address(self, message: EmailMessage, header_name: str) -> str | None:
         header_value = self._get_header_value(message, header_name)

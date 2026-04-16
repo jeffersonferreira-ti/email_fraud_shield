@@ -1,0 +1,21 @@
+From: "CEO" <ceo@empresa-corp.com>
+To: financeiro@empresa.com
+Subject: Urgent payment request
+Date: Thu, 16 Apr 2026 11:00:00 -0300
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Received-SPF: pass
+Authentication-Results: mx.example.com; spf=pass; dkim=pass; dmarc=pass
+
+Hi,
+
+I need you to process an urgent wire transfer today. This is confidential and should not be discussed with anyone else.
+
+Send R$ 18.500 to the following account and confirm once done.
+
+Bank details:
+Account: 12345678
+
+Let me know once completed.
+
+CEO

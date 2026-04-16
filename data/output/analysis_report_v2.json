@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-04-16T20:08:04.892094+00:00",
+  "generated_at": "2026-04-16T20:14:26.606029+00:00",
   "total_emails": 8,
   "results": [
     {
       "file_name": "bec_payment_request.eml",
       "sender": "ceo@empresa-corp.com",
       "subject": "Urgent payment request",
-      "total_score": 12,
-      "classification": "LEGITIMO",
+      "total_score": 42,
+      "classification": "SUSPEITO",
       "links": [],
       "authentication": {
         "spf": "pass",
@@ -27,6 +27,26 @@
               "urgent"
             ]
           }
+        },
+        {
+          "rule_name": "financial_request_language",
+          "severity": "high",
+          "score": 30,
+          "description": "The message contains business email compromise or urgent payment request language.",
+          "evidence": {
+            "from_address": "ceo@empresa-corp.com",
+            "subject": "Urgent payment request",
+            "matched_terms": [
+              "bank details",
+              "confirm once done",
+              "following account",
+              "once completed",
+              "send r$",
+              "transfer today",
+              "urgent payment",
+              "wire transfer"
+            ]
+          }
         }
       ]
     },
@@ -34,8 +54,8 @@
       "file_name": "crypto_scam.eml",
       "sender": "profit@crypto-fastgain.io",
       "subject": "Earn 500% profit in 24 hours!!!",
-      "total_score": 40,
-      "classification": "SUSPEITO",
+      "total_score": 65,
+      "classification": "PHISHING_PROVAVEL",
       "links": [
         "http://crypto-fastgain.io/start"
       ],
@@ -86,6 +106,25 @@
                 "url": "http://crypto-fastgain.io/start",
                 "reasons": "non_https"
               }
+            ]
+          }
+        },
+        {
+          "rule_name": "unrealistic_promise",
+          "severity": "high",
+          "score": 25,
+          "description": "The message promises exaggerated or guaranteed financial returns that are typical of scams.",
+          "evidence": {
+            "from_address": "profit@crypto-fastgain.io",
+            "subject": "Earn 500% profit in 24 hours!!!",
+            "matched_terms": [
+              "500% profit",
+              "500% return",
+              "500% returns",
+              "guaranteed 500%",
+              "invest now",
+              "profit in 24 hours",
+              "returns in 24 hours"
             ]
           }
         }
@@ -175,8 +214,8 @@
       "file_name": "masked_link_attack.eml",
       "sender": "support@secure-login-alert.com",
       "subject": "Account verification required",
-      "total_score": 60,
-      "classification": "PHISHING_PROVAVEL",
+      "total_score": 82,
+      "classification": "ALTO_RISCO",
       "links": [
         "http://malicious-login-check.com",
         "https://secure-bank.com/login"
@@ -234,6 +273,23 @@
               "sender_domain_pattern",
               "sender_local_part_keyword",
               "excessive_hyphenation"
+            ]
+          }
+        },
+        {
+          "rule_name": "mismatched_link_text",
+          "severity": "high",
+          "score": 22,
+          "description": "The visible text of an HTML link does not match its real destination domain.",
+          "evidence": {
+            "from_address": "support@secure-login-alert.com",
+            "mismatched_links": [
+              {
+                "visible_text": "https://secure-bank.com/login",
+                "visible_domain": "secure-bank.com",
+                "actual_href": "http://malicious-login-check.com",
+                "actual_domain": "malicious-login-check.com"
+              }
             ]
           }
         }

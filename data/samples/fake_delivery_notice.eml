@@ -1,0 +1,19 @@
+From: "Correios" <entrega@correios-suporte.net>
+To: user@example.com
+Subject: Sua encomenda está aguardando pagamento
+Date: Thu, 16 Apr 2026 11:15:00 -0300
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Received-SPF: fail
+Authentication-Results: spf=fail; dkim=fail; dmarc=fail
+
+Prezado cliente,
+
+Sua encomenda está retida aguardando pagamento da taxa de entrega.
+
+Acesse o link abaixo para regularizar:
+http://correios-taxas-pagamento.com/entrega
+
+Caso não realize o pagamento em até 24 horas, o objeto será devolvido.
+
+Correios Brasil

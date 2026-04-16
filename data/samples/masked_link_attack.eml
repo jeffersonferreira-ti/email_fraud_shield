@@ -1,0 +1,19 @@
+From: "Support Team" <support@secure-login-alert.com>
+To: user@example.com
+Subject: Account verification required
+Date: Thu, 16 Apr 2026 11:45:00 -0300
+MIME-Version: 1.0
+Content-Type: text/html; charset="utf-8"
+Received-SPF: softfail
+Authentication-Results: spf=softfail; dkim=fail; dmarc=none
+
+<html>
+  <body>
+    <p>Your account requires verification.</p>
+    <p>
+      <a href="http://malicious-login-check.com">
+        https://secure-bank.com/login
+      </a>
+    </p>
+  </body>
+</html>

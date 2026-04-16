@@ -1,14 +1,14 @@
 ::: {align="center"}
 `<img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>`{=html}
-`<img src="https://img.shields.io/badge/Security-Email%20Analysis-8E24AA?style=for-the-badge"/>`{=html}
-`<img src="https://img.shields.io/badge/Status-MVP%20Functional-00C853?style=for-the-badge"/>`{=html}
+`<img src="https://img.shields.io/badge/Security-Email%20Fraud%20Detection-8E24AA?style=for-the-badge"/>`{=html}
+`<img src="https://img.shields.io/badge/Status-MVP%20Complete-00C853?style=for-the-badge"/>`{=html}
 
 `<br/>`{=html}`<br/>`{=html}
 
 # Email Fraud Shield
 
 **Detecção de phishing e fraude em e-mails com análise heurística e
-arquitetura modular**
+explicável**
 
 *Analyze. Score. Explain.*
 :::
@@ -17,7 +17,7 @@ arquitetura modular**
 
 ## O Problema
 
-E-mails continuam sendo o principal vetor de ataque em engenharia
+E-mails continuam sendo o principal vetor de ataques de engenharia
 social.
 
   -----------------------------------------------------------------------
@@ -26,30 +26,32 @@ social.
   Phishing cada vez mais sofisticado  Roubo de credenciais e acesso
                                       indevido
 
-  Usuários não sabem identificar      Alto índice de cliques em links
-  sinais de fraude                    maliciosos
+  Golpes financeiros via e-mail (BEC) Transferências indevidas e fraude
+                                      corporativa
 
-  Ferramentas complexas são           Barreiras para aprendizado prático
-  inacessíveis para estudo            em segurança
+  Usuários não reconhecem sinais de   Alto índice de comprometimento
+  risco                               
 
-  Falta de explicabilidade nas        Difícil entender por que algo é
-  decisões                            malicioso
+  Ferramentas reais são caixas-pretas Falta de explicabilidade
   -----------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 
 ## A Solução
 
-O **Email Fraud Shield** é um analisador de e-mails que aplica:
+O **Email Fraud Shield** é um analisador de e-mails que simula, de forma
+prática, como sistemas de detecção de fraude funcionam.
+
+Ele aplica:
 
 -   parsing estruturado de `.eml`
--   motor heurístico baseado em sinais reais de phishing
+-   motor heurístico baseado em sinais reais de ataque
 -   sistema de pontuação de risco
 -   classificação final explicável
 -   geração de relatório estruturado em JSON
 
-> O objetivo não é substituir soluções corporativas, mas demonstrar
-> **como sistemas de detecção de fraude funcionam na prática**.
+> O foco não é substituir soluções corporativas, mas demonstrar **como a
+> lógica de detecção funciona na prática**.
 
 ------------------------------------------------------------------------
 
@@ -59,66 +61,22 @@ O **Email Fraud Shield** é um analisador de e-mails que aplica:
 
 ------------------------------------------------------------------------
 
-## Funcionalidades
+## Dataset de Validação
 
-### Core
-
--   Leitura de arquivos `.eml` locais
--   Parser robusto de:
-    -   cabeçalhos
-    -   corpo (texto e HTML)
-    -   links
-    -   autenticação (SPF, DKIM, DMARC)
--   Tratamento defensivo de e-mails malformados
-
-### Análise de Segurança
-
--   Motor heurístico com múltiplas regras
--   Detecção de:
-    -   falhas de autenticação
-    -   linguagem de urgência
-    -   solicitação de dados sensíveis
-    -   links suspeitos (HTTP)
-    -   domínios potencialmente falsificados
-    -   pressão por verificação de conta
--   Sistema de scoring acumulativo
-
-### Classificação
-
--   `LEGITIMO`
--   `SUSPEITO`
--   `PHISHING_PROVAVEL`
--   `ALTO_RISCO`
-
-### Output
-
--   Relatório JSON estruturado
--   CLI com execução parametrizável
--   Logs de execução
+O sistema foi testado com um conjunto de 8 e-mails simulando cenários
+reais.
 
 ------------------------------------------------------------------------
 
-## Como Executar
+## Resultado do Motor
 
-``` bash
-git clone https://github.com/seu-usuario/email-fraud-shield.git
-cd email-fraud-shield
-pip install -r requirements.txt
-
-python main.py
-```
-
-------------------------------------------------------------------------
-
-## Limitações
-
--   Não analisa anexos binários
--   Não integra com inbox real (IMAP/API)
--   Não substitui soluções corporativas
--   Baseado em heurísticas simples (MVP)
+ALTO_RISCO=2\
+PHISHING_PROVAVEL=3\
+SUSPEITO=1\
+LEGITIMO=2
 
 ------------------------------------------------------------------------
 
 ## Sobre o Desenvolvedor
 
-Desenvolvido por **Jefferson Ferreira**
+Desenvolvido por Jefferson Ferreira
