@@ -240,9 +240,7 @@ Projeto desenvolvido como estudo prático de:
 
 ---
 
-## Sobre o Desenvolvedor
-
-Desenvolvido por **Jefferson Ferreira**.
+## 👨‍💻Desenvolvido por **Jefferson Ferreira**.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin)](https://www.linkedin.com/in/jefferson-ferreira-ti/)
 [![GitHub](https://img.shields.io/badge/GitHub-Follow-181717?style=flat&logo=github)](https://github.com/jeffersonferreira-ti)
